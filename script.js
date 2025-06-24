@@ -59,15 +59,23 @@ const realUID = firebase.auth().currentUser.uid;
 
 // 채팅 메시지 전송
 function sendMessage() {
-  const input = document.getElementById("messageInput");
-  const text = input.value.trim();
-  if (text === "") return;
-  database.ref("messages").push({
-    uid: uid,
-    text: text,
-    time: Date.now()
-  });
-  input.value = "";
+    const input = document.getElementById("messageInput");
+    const text = input.value.trim();
+    if (text === "") return;
+
+    // uid가 null인 경우 메시지 전송을 방지
+    if (uid === null) {
+        console.error("Firebase UID가 아직 설정되지 않았습니다. 잠시 후 다시 시도해주세요.");
+        alert("로그인이 완료되지 않았습니다. 잠시 후 다시 시도해주세요.");
+        return;
+    }
+
+    database.ref("messages").push({
+        uid: uid, // 이 uid가 null이면 오류 발생
+        text: text,
+        time: Date.now()
+    });
+    input.value = "";
 }
 
 // 실시간 메시지 표시
