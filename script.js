@@ -1,7 +1,7 @@
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
-const firestore = firebase.firestore;  // ❗ 이게 필요해
+const firestore = firebase.firestore();  // ❗ 이게 필요해
 let uid = null;
 
 // 로그인 후 실행
