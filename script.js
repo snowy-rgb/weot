@@ -13,10 +13,18 @@ firebase.auth().signInAnonymously().then(userCredential => {
 const simpleUID = generateSimpleUID();
 const realUID = firebase.auth().currentUser.uid;
 
-await firestore.collection("users").doc(simpleUID).set({
-  realUid: realUID,
-  connectedTo: null
-});
+async function registerUser() {
+  const simpleUID = generateSimpleUID();
+  const realUID = firebase.auth().currentUser.uid;
+
+  await firestore.collection("users").doc(simpleUID).set({
+    realUid: realUID,
+    connectedTo: null
+  });
+
+  console.log("등록 완료! 내 코드:", simpleUID);
+}
+
 
 function generateSimpleUID() {
   return Math.floor(100000 + Math.random() * 900000).toString();
