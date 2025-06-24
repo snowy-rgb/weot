@@ -131,11 +131,11 @@ function startChat(chatId) {
   });
 }
 
-function sendMessage(chatId, text, fromUid) {
-  firestore.collection("chats").doc(chatId).collection("messages").add({
-    text: text,
-    from: fromUid,
-    time: firebase.firestore.FieldValue.serverTimestamp()
-  });
-}
+// function sendMessage(chatId, text, fromUid) {
+//   firestore.collection("chats").doc(chatId).collection("messages").add({
+//     text: text,
+//     from: fromUid,
+//     time: firebase.firestore.FieldValue.serverTimestamp()
+//   });
+// }
 
