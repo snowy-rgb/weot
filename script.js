@@ -3,11 +3,29 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 let uid = null;
 
+// 로그인 후 실행
+firebase.auth().signInAnonymously().then(() => {
+  generateAndRegisterUser();
+});
+
 // 익명 로그인
 firebase.auth().signInAnonymously().then(userCredential => {
-  uid = userCredential.user.uid;
-  console.log("내 UID:", uid);
-  setupChatListener();
+  const realUID = userCredential.user.uid;
+  uid = realUID;
+
+  console.log("익명 로그인 성공! Firebase UID:", realUID);
+
+  const simpleUID = generateSimpleUID();
+  firestore.collection("users").doc(simpleUID).set({
+    realUid: realUID,
+    connectedTo: null
+  }).then(() => {
+    console.log("등록 완료! 내 코드:", simpleUID);
+    document.getElementById("myCode").textContent = simpleUID;
+
+    // 이제 채팅 시작 가능!
+    setupChatListener();
+  });
 });
 
 const simpleUID = generateSimpleUID();
@@ -30,10 +48,7 @@ function generateSimpleUID() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// 로그인 후 실행
-firebase.auth().signInAnonymously().then(() => {
-  generateAndRegisterUser();
-});
+
 
 
 
