@@ -8,6 +8,11 @@ firebase.auth().signInAnonymously().then(() => {
   generateAndRegisterUser();
 });
 
+function generateSimpleUID() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+
 // 익명 로그인
 firebase.auth().signInAnonymously().then(userCredential => {
   const realUID = userCredential.user.uid;
@@ -28,9 +33,6 @@ firebase.auth().signInAnonymously().then(userCredential => {
   });
 });
 
-const simpleUID = generateSimpleUID();
-const realUID = firebase.auth().currentUser.uid;
-
 async function generateAndRegisterUser() {
   const simpleUID = generateSimpleUID();
   const realUID = firebase.auth().currentUser.uid;
@@ -44,9 +46,11 @@ async function generateAndRegisterUser() {
   document.getElementById("myCode").textContent = simpleUID;
 }
 
-function generateSimpleUID() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
+const simpleUID = generateSimpleUID();
+const realUID = firebase.auth().currentUser.uid;
+
+
+
 
 
 
