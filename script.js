@@ -47,51 +47,88 @@ async function generateAndRegisterUser() {
   document.getElementById("myCode").textContent = simpleUID;
 }
 
-
-
-// 채팅 메시지 전송
-function sendMessage() {
+function sendMessage() { // sendMessage 대신 이 이름을 사용하세요.
     const input = document.getElementById("messageInput");
     const text = input.value.trim();
-    if (text === "") return;
 
-      if (!text || typeof text !== 'string' || text.trim() === '') {
-        console.error("Firestore에 전송할 메시지 내용이 유효하지 않습니다:", text);
-        alert("보낼 메시지 내용을 입력해주세요.");
-        return; // 유효하지 않은 메시지는 전송하지 않음
-    }
-    if (!fromUid) {
-        console.error("Firestore에 전송할 메시지의 fromUid가 누락되었습니다.");
+    // 1. 메시지 내용 유효성 검사
+    if (text === "") {
+        alert("보낼 메시지를 입력해주세요.");
         return;
     }
 
-
-    // uid가 null인 경우 메시지 전송을 방지
+    // 2. 로그인 상태 (uid) 확인
     if (uid === null) {
-        console.error("Firebase UID가 아직 설정되지 않았습니다. 잠시 후 다시 시도해주세요.");
-        alert("로그인이 완료되지 않았습니다. 잠시 후 다시 시도해주세요.");
-        return;
-    }
-      if (!fromUid) {
-        console.error("Firestore에 전송할 메시지의 fromUid가 누락되었습니다.");
+        alert("로그인이 완료되지 않아 메시지를 보낼 수 없습니다. 잠시 후 다시 시도해주세요.");
+        console.error("Firebase UID가 아직 설정되지 않았습니다.");
         return;
     }
 
-    firestore.collection("chats").doc(chatId).collection("messages").add({
-        text: text.trim(), // text가 undefined가 되지 않도록 방어하고, 공백 제거
-        from: fromUid,
+    // 3. 채팅 연결 상태 (currentChatId) 확인
+    if (currentChatId === null) {
+        alert("채팅 상대방과 먼저 연결해주세요.");
+        console.error("현재 활성화된 채팅방이 없습니다.");
+        return;
+    }
+
+    // Firestore에 메시지 추가 (chatId와 from은 함수 내부에서 사용 가능한 변수로 대체)
+    firestore.collection("chats").doc(currentChatId).collection("messages").add({
+        text: text,     // 사용자가 입력한 메시지
+        from: uid,      // 로그인한 사용자의 UID (전역 uid 변수 사용)
         time: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        input.value = ""; // 메시지 전송 성공 후 입력 필드 초기화
     }).catch(error => {
         console.error("Firestore 메시지 전송 중 오류 발생:", error);
+        alert("메시지 전송에 실패했습니다. 콘솔을 확인해주세요.");
     });
-
-    database.ref("messages").push({
-        uid: uid, // 이 uid가 null이면 오류 발생
-        text: text,
-        time: Date.now()
-    });
-    input.value = "";
 }
+
+
+
+//  채팅 메시지 전송
+// function sendMessage() {
+//     const input = document.getElementById("messageInput");
+//     const text = input.value.trim();
+//     if (text === "") return;
+
+//       if (!text || typeof text !== 'string' || text.trim() === '') {
+//         console.error("Firestore에 전송할 메시지 내용이 유효하지 않습니다:", text);
+//         alert("보낼 메시지 내용을 입력해주세요.");
+//         return; // 유효하지 않은 메시지는 전송하지 않음
+//     }
+//     if (!fromUid) {
+//         console.error("Firestore에 전송할 메시지의 fromUid가 누락되었습니다.");
+//         return;
+//     }
+
+
+//     // uid가 null인 경우 메시지 전송을 방지
+//     if (uid === null) {
+//         console.error("Firebase UID가 아직 설정되지 않았습니다. 잠시 후 다시 시도해주세요.");
+//         alert("로그인이 완료되지 않았습니다. 잠시 후 다시 시도해주세요.");
+//         return;
+//     }
+//       if (!fromUid) {
+//         console.error("Firestore에 전송할 메시지의 fromUid가 누락되었습니다.");
+//         return;
+//     }
+
+//     firestore.collection("chats").doc(chatId).collection("messages").add({
+//         text: text.trim(), // text가 undefined가 되지 않도록 방어하고, 공백 제거
+//         from: fromUid,
+//         time: firebase.firestore.FieldValue.serverTimestamp()
+//     }).catch(error => {
+//         console.error("Firestore 메시지 전송 중 오류 발생:", error);
+//     });
+
+//     database.ref("messages").push({
+//         uid: uid, // 이 uid가 null이면 오류 발생
+//         text: text,
+//         time: Date.now()
+//     });
+//     input.value = "";
+// }
 
 // 실시간 메시지 표시
 function setupChatListener() {
