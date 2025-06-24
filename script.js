@@ -10,6 +10,18 @@ firebase.auth().signInAnonymously().then(userCredential => {
   setupChatListener();
 });
 
+const simpleUID = generateSimpleUID();
+const realUID = firebase.auth().currentUser.uid;
+
+await firestore.collection("users").doc(simpleUID).set({
+  realUid: realUID,
+  connectedTo: null
+});
+
+function generateSimpleUID() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 // 채팅 메시지 전송
 function sendMessage() {
   const input = document.getElementById("messageInput");
@@ -34,3 +46,38 @@ function setupChatListener() {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   });
 }
+
+async function connectToUser(myCode, partnerCode) {
+  // 나와 상대방의 연결 상태 기록
+  await firestore.collection("users").doc(myCode).update({ connectedTo: partnerCode });
+  await firestore.collection("users").doc(partnerCode).update({ connectedTo: myCode });
+
+  const chatId = makeChatId(myCode, partnerCode);  // 아래 함수 참고
+  startChat(chatId);
+}
+
+function makeChatId(a, b) {
+  return [a, b].sort().join("_"); // 항상 같은 이름으로
+}
+
+function startChat(chatId) {
+  const messagesRef = firestore.collection("chats").doc(chatId).collection("messages");
+
+  messagesRef.orderBy("time").onSnapshot(snapshot => {
+    snapshot.docChanges().forEach(change => {
+      if (change.type === "added") {
+        const msg = change.doc.data();
+        showMessage(msg);
+      }
+    });
+  });
+}
+
+function sendMessage(chatId, text, fromUid) {
+  firestore.collection("chats").doc(chatId).collection("messages").add({
+    text: text,
+    from: fromUid,
+    time: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
