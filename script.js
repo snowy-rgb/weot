@@ -47,14 +47,6 @@ async function generateAndRegisterUser() {
   document.getElementById("myCode").textContent = simpleUID;
 }
 
-const simpleUID = generateSimpleUID();
-const realUID = firebase.auth().currentUser.uid;
-
-
-
-
-
-
 
 
 // 채팅 메시지 전송
