@@ -17,10 +17,17 @@
     <button onclick="sendMessage()">보내기</button>
   </div>
 
-  <!-- Firebase SDKs -->
+  <!-- ① Firebase core -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  
+  <!-- ② Firebase Authentication -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  
+  <!-- ③ Firebase Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
+  
+  <!-- ④ Firebase Realtime Database (필요하면) -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 
   <!-- 2. 정의 (이게 먼저 들어가야 함!) -->
   <script src="firebaseConfig.js"></script>
