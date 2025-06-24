@@ -13,7 +13,7 @@ firebase.auth().signInAnonymously().then(userCredential => {
 const simpleUID = generateSimpleUID();
 const realUID = firebase.auth().currentUser.uid;
 
-async function registerUser() {
+async function generateAndRegisterUser() {
   const simpleUID = generateSimpleUID();
   const realUID = firebase.auth().currentUser.uid;
 
@@ -23,12 +23,19 @@ async function registerUser() {
   });
 
   console.log("등록 완료! 내 코드:", simpleUID);
+  document.getElementById("myCode").textContent = simpleUID;
 }
-
 
 function generateSimpleUID() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
+
+// 로그인 후 실행
+firebase.auth().signInAnonymously().then(() => {
+  generateAndRegisterUser();
+});
+
+
 
 // 채팅 메시지 전송
 function sendMessage() {
